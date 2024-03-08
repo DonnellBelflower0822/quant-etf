@@ -1,16 +1,14 @@
 "use client";
 
 import day from "dayjs";
-import { commonFetch } from "@/lib";
-import { transformKlineData } from "@/lib/transfom";
-import { FetchKLineResult } from "@/type";
 import {
   Datafeed,
   DatafeedSubscribeCallback,
-  KLineData,
   Period,
   SymbolInfo,
-} from "@/lib/klinecharts-pro";
+} from "@klinecharts/pro";
+import { KLineData } from "klinecharts";
+import { getKlineData } from "../../services/data/getKlineData";
 import { PeriodMap } from "./constant";
 
 export default class DefaultDatafeed implements Datafeed {
@@ -21,6 +19,7 @@ export default class DefaultDatafeed implements Datafeed {
   // private _ws?: WebSocket;
 
   async searchSymbols(search?: string): Promise<SymbolInfo[]> {
+    console.log("search", search);
     return Promise.resolve([]);
     // const response = await fetch(
     //   `https://api.polygon.io/v3/reference/tickers?apiKey=${
@@ -41,18 +40,17 @@ export default class DefaultDatafeed implements Datafeed {
   }
 
   async getHistoryKLineData(
-    symbol: SymbolInfo & { code: string },
+    symbol: SymbolInfo,
     period: Period,
     from: number,
     to: number
   ): Promise<KLineData[]> {
-    const { data } = (await commonFetch(`/api/kline/${symbol.code}`, {
-      period: PeriodMap[period.timespan as "day"],
-      from: day(from).format("YYYYMMDD"),
-      to: day(to).format("YYYYMMDD"),
-    })) as { data: FetchKLineResult };
-
-    return transformKlineData(data);
+    return getKlineData(
+      symbol.shortName!,
+      day(from).format("YYYYMMDD"),
+      day(to).format("YYYYMMDD"),
+      PeriodMap[period.timespan as "day"] as "daily"
+    );
   }
 
   subscribe(
@@ -60,6 +58,7 @@ export default class DefaultDatafeed implements Datafeed {
     period: Period,
     callback: DatafeedSubscribeCallback
   ): void {
+    console.log("search", symbol, period, callback);
     // // if (this._prevSymbolMarket !== symbol.market) {
     // //   this._ws?.close();
     // //   this._ws = new WebSocket(`wss://delayed.polygon.io/${symbol.market}`);
@@ -101,5 +100,7 @@ export default class DefaultDatafeed implements Datafeed {
     // this._prevSymbolMarket = symbol.market;
   }
 
-  unsubscribe(symbol: SymbolInfo, period: Period): void {}
+  unsubscribe(symbol: SymbolInfo, period: Period): void {
+    console.log(symbol, period);
+  }
 }

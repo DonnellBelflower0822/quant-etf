@@ -1,6 +1,6 @@
 import { Params } from "../type";
 
-export const buildQuery = (data: Params) => {
+const buildQuery = (data: Params) => {
   return Object.entries(data)
     .map(([key, value]) => {
       if (value === undefined || value === null || value === "") {
@@ -12,7 +12,7 @@ export const buildQuery = (data: Params) => {
     .join("&");
 };
 
-export const buildUrl = (url: string, params: Params) => {
+const buildUrl = (url: string, params: Params) => {
   const query = buildQuery(params);
   if (query) {
     return `${url}?${query}`;

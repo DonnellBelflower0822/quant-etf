@@ -1,4 +1,5 @@
-import { KLineData } from "@/lib/klinecharts-pro";
+import { KLineData } from "klinecharts";
+import { ActionType } from "../../constant/enum";
 
 const data = [
   {
@@ -55,20 +56,13 @@ const data = [
   },
 ];
 
-enum Type {
-  Sell = "卖出",
-  Buy = "买入",
-  Empty = "空仓",
-  Hold = "持仓",
-}
-
 interface Log extends KLineData {
   input: number;
   cost_price: number;
   number_of_shares: number;
   profit_and_loss: number;
   profit_and_loss_ratio: number;
-  type: Type;
+  type: ActionType;
   reason?: string;
 }
 
@@ -121,7 +115,7 @@ class Trader {
       cost_price: this.cost_price,
       profit_and_loss: this.profit_and_loss,
       profit_and_loss_ratio: this.profit_and_loss_ratio,
-      type: Type.Buy,
+      type: ActionType.Buy,
     });
   }
 
@@ -137,7 +131,7 @@ class Trader {
       cost_price: this.cost_price,
       profit_and_loss: this.input,
       profit_and_loss_ratio: this.profit_and_loss_ratio,
-      type: Type.Empty,
+      type: ActionType.Empty,
     });
   }
 
@@ -158,7 +152,7 @@ class Trader {
       cost_price: this.cost_price,
       profit_and_loss: this.profit_and_loss,
       profit_and_loss_ratio: this.profit_and_loss_ratio,
-      type: Type.Hold,
+      type: ActionType.Hold,
       reason,
     });
   }
@@ -198,7 +192,7 @@ class Trader {
       cost_price: this.cost_price,
       profit_and_loss: this.profit_and_loss,
       profit_and_loss_ratio: this.profit_and_loss_ratio,
-      type: Type.Sell,
+      type: ActionType.Sell,
     });
   }
 

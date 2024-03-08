@@ -1,6 +1,6 @@
-import { KLineData } from "@/lib/klinecharts-pro";
 import classnames from "classnames";
 import dayjs from "dayjs";
+import { KLineData } from "klinecharts";
 
 export interface ITooltip {
   direction: "left" | "right";
