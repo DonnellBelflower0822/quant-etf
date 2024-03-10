@@ -1,18 +1,108 @@
 import { KLineData } from "klinecharts";
 import { formatKlineData, formatNumber } from "../../utils/format";
 import { bollingerBands } from "indicatorts";
+import Trader from "../trader";
+
+enum StatusType {
+  // 初始状态
+  start,
+  // 在上轨上面
+  over_upper,
+  // 站在上轨
+  stand_upper,
+  // 在上轨和中轨之间
+  in_top,
+  // 站在中轨
+  stand_middle,
+  // 在中轨和下轨之间
+  in_bottom,
+  // 站在下轨
+  stand_lower,
+  // 在下轨下面
+  over_lower,
+}
+
+const calcStatusType = (
+  close: number,
+  lower: number,
+  middle: number,
+  top: number
+) => {
+  if (close > top) {
+    return StatusType.over_upper;
+  }
+  if (close === top) {
+    return StatusType.stand_upper;
+  }
+
+  if (close > middle) {
+    return StatusType.in_top;
+  }
+
+  if (close === middle) {
+    return StatusType.stand_middle;
+  }
+
+  if (close > lower) {
+    return StatusType.in_bottom;
+  }
+
+  if (close === lower) {
+    return StatusType.stand_lower;
+  }
+
+  return StatusType.over_lower;
+};
 
 const runTask = (klineData: KLineData[]) => {
   const kData = formatKlineData(klineData);
 
+  const trader = new Trader();
+
   const boll = bollingerBands(kData.closings);
 
+  let lastStatus: StatusType = StatusType.start;
+
   klineData.forEach((kline, index) => {
+    if (index < 19) {
+      lastStatus = StatusType.start;
+      trader.hold(kline);
+
+      return;
+    }
+
+    const { close } = kline;
     const lower = formatNumber(boll.lowerBand[index]);
     const upper = formatNumber(boll.upperBand[index]);
     const middle = formatNumber(boll.middleBand[index]);
 
-    console.log(kline.close, lower, upper, middle);
+    const status = calcStatusType(close, lower, middle, upper);
+
+    if ([StatusType.over_upper, StatusType.stand_upper].includes(status)) {
+      trader.sell(close, 2000, 0.2, kline);
+    } else if (
+      [StatusType.over_lower, StatusType.stand_lower].includes(status)
+    ) {
+      trader.buy(close, 2000, 0.2, kline);
+    } else if (
+      [
+        StatusType.in_top,
+        StatusType.over_lower,
+        StatusType.stand_lower,
+      ].includes(lastStatus) &&
+      [StatusType.stand_middle, StatusType.in_bottom].includes(status)
+    ) {
+      trader.buy(close, 2000, 0.2, kline);
+    } else if (
+      [StatusType.in_bottom, StatusType.over_lower].includes(lastStatus) &&
+      [StatusType.stand_middle, StatusType.in_top].includes(status)
+    ) {
+      trader.sell(close, 2000, 0.2, kline);
+    } else {
+      trader.hold(kline);
+    }
+
+    lastStatus = status;
 
     /**
      * 打标签：
@@ -28,6 +118,8 @@ const runTask = (klineData: KLineData[]) => {
      * 策略
      */
   });
+
+  return trader;
 };
 
 export default runTask;

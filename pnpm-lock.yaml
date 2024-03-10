@@ -32,6 +32,9 @@ dependencies:
   klinecharts:
     specifier: ^9.8.0
     version: 9.8.0
+  klinecharts-pro-xxz:
+    specifier: ^0.1.1
+    version: 0.1.1
   postcss:
     specifier: ^8.4.35
     version: 8.4.35
@@ -2859,6 +2862,13 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       is-buffer: 1.1.6
+    dev: false
+
+  /klinecharts-pro-xxz@0.1.1:
+    resolution: {integrity: sha512-PlRA6rQvhg7l2gQMndwhbpQ03hfTqVW0lTA1rt70XFEz9rgBcYrkqOWopTipjWynGvaY/rPdnxXSlj6JFIcf+Q==}
+    dependencies:
+      lodash: 4.17.21
+      solid-js: 1.8.15
     dev: false
 
   /klinecharts@9.8.0:

@@ -1,26 +1,37 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { Line } from "@ant-design/charts";
+import { DualAxes } from "@ant-design/charts";
 
-const StatisticChart: React.FC = () => {
-  const data = [
-    { year: "1991", value: 3 },
-    { year: "1992", value: 4 },
-    { year: "1993", value: 3.5 },
-    { year: "1994", value: 5 },
-    { year: "1995", value: 4.9 },
-    { year: "1996", value: 6 },
-    { year: "1997", value: 7 },
-    { year: "1998", value: 9 },
-    { year: "1999", value: 13 },
-  ];
+export interface Data {
+  timestamp: string;
+  // 盈亏
+  收益: number;
+  投入: number;
+}
 
+const StatisticChart: React.FC<{ data: Data[] }> = ({ data }) => {
   const config = {
     data,
-    height: 400,
-    xField: "year",
-    yField: "value",
+    xField: "timestamp",
+    padding: 70,
+    legend: true,
+    slider: { x: true },
+    scale: { y: { nice: false } },
+    children: [
+      {
+        type: "interval",
+        yField: "投入",
+        style: { stroke: "#5B8FF9" },
+      },
+      {
+        type: "line",
+        yField: "收益",
+        style: { stroke: "#5AD8A6", lineWidth: 2 },
+        axis: { y: { position: "right" } },
+      },
+    ],
   };
-  return <Line {...config} />;
+  return <DualAxes {...(config as any)} />;
 };
 
 export default StatisticChart;

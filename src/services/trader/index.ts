@@ -1,62 +1,8 @@
 import { KLineData } from "klinecharts";
 import { ActionType } from "../../constant/enum";
+import { formatNumber } from "../../utils/format";
 
-const data = [
-  {
-    date: "11",
-    price: 10,
-    type: "buy",
-    quantity: 100,
-    fee: 5,
-    clear: false,
-  },
-  { date: "2024-03-02", price: 11, type: "hold" },
-  {
-    date: "2024-03-03",
-    price: 12,
-    type: "sell",
-    quantity: 50,
-    fee: 5,
-    clear: false,
-  },
-  { date: "2024-03-04", price: 13, type: "hold" },
-  {
-    date: "2024-03-05",
-    price: 15,
-    type: "sell",
-    quantity: 50,
-    fee: 5,
-    clear: true,
-  },
-  {
-    date: "2024-03-06",
-    price: 16,
-    type: "buy",
-    quantity: 200,
-    fee: 1,
-    clear: false,
-  },
-  { date: "2024-03-07", price: 17, type: "hold" },
-  {
-    date: "2024-03-08",
-    price: 18,
-    type: "sell",
-    quantity: 150,
-    fee: 10,
-    clear: false,
-  },
-  { date: "2024-03-09", price: 20, type: "hold" },
-  {
-    date: "2024-03-10",
-    price: 22,
-    type: "sell",
-    quantity: 20,
-    fee: 2,
-    clear: false,
-  },
-];
-
-interface Log extends KLineData {
+export interface Log extends KLineData {
   input: number;
   cost_price: number;
   number_of_shares: number;
@@ -65,6 +11,10 @@ interface Log extends KLineData {
   type: ActionType;
   reason?: string;
 }
+
+let _profit_and_loss = 0;
+
+const formatInput = (x: number) => (x < 0 ? 0 : x);
 
 class Trader {
   log: Log[] = [];
@@ -79,7 +29,13 @@ class Trader {
   number_of_shares = 0;
 
   // 盈亏
-  profit_and_loss = 0;
+  get profit_and_loss() {
+    return _profit_and_loss;
+  }
+
+  set profit_and_loss(value: number) {
+    _profit_and_loss = formatNumber(value, 2);
+  }
 
   // 盈亏率
   profit_and_loss_ratio = 0;
@@ -93,7 +49,7 @@ class Trader {
    */
   buy(price: number, count: number, free: number, kline: KLineData) {
     // 投入
-    this.input += price * count + free;
+    this.input = formatNumber(this.input + price * count + free, 2);
 
     // 持股数
     this.number_of_shares += count;
@@ -103,14 +59,14 @@ class Trader {
 
     // 盈亏
     this.profit_and_loss =
-      (kline.price - this.cost_price) * this.number_of_shares;
+      (kline.close - this.cost_price) * this.number_of_shares;
 
     // 盈亏率
     this.profit_and_loss_ratio = this.profit_and_loss / this.cost_price;
 
     this.log.push({
       ...kline,
-      input: this.input,
+      input: formatInput(this.input),
       number_of_shares: this.number_of_shares,
       cost_price: this.cost_price,
       profit_and_loss: this.profit_and_loss,
@@ -126,10 +82,10 @@ class Trader {
     this.profit_and_loss_ratio = 0;
     this.log.push({
       ...kline,
-      input: this.input,
+      input: 0,
       number_of_shares: this.number_of_shares,
       cost_price: this.cost_price,
-      profit_and_loss: this.input,
+      profit_and_loss: -this.input,
       profit_and_loss_ratio: this.profit_and_loss_ratio,
       type: ActionType.Empty,
     });
@@ -142,12 +98,12 @@ class Trader {
       return;
     }
 
-    const { price } = kline;
-    this.profit_and_loss = (price - this.cost_price) * this.number_of_shares;
+    const { close } = kline;
+    this.profit_and_loss = (close - this.cost_price) * this.number_of_shares;
     this.profit_and_loss_ratio = this.profit_and_loss / this.cost_price;
     this.log.push({
       ...kline,
-      input: this.input,
+      input: formatInput(this.input),
       number_of_shares: this.number_of_shares,
       cost_price: this.cost_price,
       profit_and_loss: this.profit_and_loss,
@@ -165,7 +121,7 @@ class Trader {
     }
 
     // 投入
-    this.input -= count * price;
+    this.input = formatNumber(this.input - count * price, 2);
     // 数量
     this.number_of_shares -= count;
 
@@ -187,40 +143,12 @@ class Trader {
 
     this.log.push({
       ...kline,
-      input: this.input,
+      input: formatInput(this.input),
       number_of_shares: this.number_of_shares,
       cost_price: this.cost_price,
       profit_and_loss: this.profit_and_loss,
       profit_and_loss_ratio: this.profit_and_loss_ratio,
       type: ActionType.Sell,
-    });
-  }
-
-  run() {
-    data.forEach((item) => {
-      if (item.type === "sell") {
-        this.sell(
-          item.price,
-          item.quantity!,
-          item.fee!,
-          item as unknown as KLineData
-        );
-        return;
-      }
-
-      if (item.type === "hold") {
-        this.hold(item as unknown as KLineData);
-        return;
-      }
-
-      if (item.type === "buy") {
-        this.buy(
-          item.price,
-          item.quantity!,
-          item.fee!,
-          item as unknown as KLineData
-        );
-      }
     });
   }
 }

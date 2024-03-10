@@ -19,6 +19,7 @@
     "dayjs": "^1.11.10",
     "indicatorts": "^1.0.18",
     "klinecharts": "^9.8.0",
+    "klinecharts-pro-xxz": "^0.1.1",
     "postcss": "^8.4.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
