@@ -1,7 +1,5 @@
-import { columns } from "../../constant";
-import dayjs from "dayjs";
 import { commonFetch } from "../../utils/fetch";
-import { KLineData } from "klinecharts";
+import Kline from "../data/Kline";
 
 interface Clist {
   data: {
@@ -48,7 +46,7 @@ export const getKlineData = async (
   end_date: string = "20500000",
   period: "daily" | "weekly" | "monthly" = "daily",
   adjust: "qfq" | "hfq" | "" = "qfq"
-): Promise<KLineData[]> => {
+): Promise<Kline | null> => {
   const code_id_dict = await _fund_etf_code_id_map_em();
   const result = await commonFetch<OriginKlineData>(
     "https://push2his.eastmoney.com/api/qt/stock/kline/get",
@@ -74,17 +72,8 @@ export const getKlineData = async (
   );
 
   if (!result.data) {
-    return [];
+    return null;
   }
 
-  return result.data.klines.map((item) => {
-    const arr = item.split(",");
-    return columns.reduce(
-      (prev, column, index) =>
-        index === 0
-          ? { ...prev, [column]: dayjs(arr[index]).valueOf() }
-          : { ...prev, [column]: parseFloat(arr[index]) },
-      {} as KLineData
-    );
-  });
+  return new Kline(result.data.klines);
 };

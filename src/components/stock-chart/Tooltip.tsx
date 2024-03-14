@@ -26,7 +26,12 @@ const fields = [
   { label: "最低价", value: "low" },
   { label: "收盘价", value: "close" },
   { label: "涨跌额", value: "chg", getClassName },
-  { label: "涨跌幅", value: "turnover", getClassName },
+  {
+    label: "涨跌幅",
+    value: "turnover",
+    getClassName,
+    format: (value: number) => value + "%",
+  },
   {
     label: "成交量",
     value: "volume",
@@ -61,7 +66,7 @@ const Tooltip: React.FC<{ tooltip?: ITooltip }> = ({ tooltip }) => {
   return (
     <div
       className={classnames(
-        "absolute z-50 top-4 w-32 shadow-md bg-slate-50 p-2 box-border text-xs",
+        "absolute z-50 top-16 w-32 shadow-md bg-slate-50 p-2 box-border text-xs",
         {
           "left-2": direction !== "right",
           "right-[70px]": direction === "right",

@@ -1,6 +1,7 @@
 import { KLineData } from "klinecharts";
 import { ActionType } from "../../constant/enum";
 import { formatNumber } from "../../utils/format";
+import dayjs from "dayjs";
 
 export interface Log extends KLineData {
   input: number;
@@ -35,6 +36,20 @@ class Trader {
 
   set profit_and_loss(value: number) {
     _profit_and_loss = formatNumber(value, 2);
+  }
+
+  get trader_record() {
+    return this.log.map((item) => ({
+      timestamp: dayjs(item.timestamp).format("YYYY-MM-DD"),
+      收益: item.profit_and_loss,
+      投入: item.input,
+    }));
+  }
+
+  get trader_logs() {
+    return this.log.filter((log) =>
+      [ActionType.Buy, ActionType.Sell].includes(log.type)
+    );
   }
 
   // 盈亏率

@@ -8,7 +8,7 @@ import {
   SymbolInfo,
 } from "@klinecharts/pro";
 import { KLineData } from "klinecharts";
-import { getKlineData } from "../../services/data/getKlineData";
+import { getKlineData } from "../../services/api/getKlineData";
 import { PeriodMap } from "./constant";
 
 export default class DefaultDatafeed implements Datafeed {
@@ -50,7 +50,7 @@ export default class DefaultDatafeed implements Datafeed {
       day(from).format("YYYYMMDD"),
       day(to).format("YYYYMMDD"),
       PeriodMap[period.timespan as "day"] as "daily"
-    );
+    ).then((res) => res?.klineData ?? []);
   }
 
   subscribe(

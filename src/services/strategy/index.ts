@@ -1,9 +1,10 @@
-import { getKlineData } from "../data/getKlineData";
-import runTask from "./boll";
+import { getKlineData } from "../api/getKlineData";
+import Big from "./big";
+import { runTask } from "./common";
 
 const task = async (code: string) => {
-  const klineData = await getKlineData(code);
-  return runTask(klineData);
+  const klineInstance = await getKlineData(code);
+  return runTask(Big, klineInstance!);
 };
 
 export default task;

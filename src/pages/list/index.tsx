@@ -1,6 +1,6 @@
 import { Spin, TableColumnProps, Table } from "antd";
 import { useRequest } from "ahooks";
-import { ReturnType, getEtfList } from "../../services/data/getEtfList";
+import { ReturnType, getEtfList } from "../../services/api/getEtfList";
 
 const List = () => {
   const { data } = useRequest(() => getEtfList());

@@ -27,6 +27,7 @@ const Chart: React.FC<{ code: string; actions: Log[] }> = ({
     }
     // 创建实例
     ref.current = new KLineChartPro({
+      drawingBarVisible: false,
       container: document.getElementById(id)!,
       // 初始化标的信息
       symbol: {
@@ -43,29 +44,37 @@ const Chart: React.FC<{ code: string; actions: Log[] }> = ({
       period: periods[0],
       datafeed: new DefaultDatafeed(),
       mainIndicators: ["BOLL"],
-      styles: {},
+      watermark: "",
+      styles: {
+        candle: {
+          priceMark: {
+            last: {
+              show: false,
+            },
+          },
+        },
+      },
     });
-    ref.current.getChartApi()?.setPriceVolumePrecision(3, 3);
 
-    ref.current
-      .getChartApi()
-      ?.subscribeAction("onCrosshairChange" as any, (data: any) => {
-        console.log(11111);
-        if (!ref.current) {
-          return;
-        }
+    const chartApi = ref.current.getChartApi();
+    chartApi?.setPriceVolumePrecision(3, 3);
 
-        const chartApi = ref.current.getChartApi();
+    chartApi?.subscribeAction("onCrosshairChange" as any, (data: any) => {
+      if (!ref.current) {
+        return;
+      }
 
-        const { from, to } = chartApi.getVisibleRange()!;
-        const { dataIndex, kLineData } = data;
-        const center = (to - from) / 2 + from;
-        if (dataIndex > center) {
-          setTooltip({ direction: "left", klineData: kLineData });
-        } else {
-          setTooltip({ direction: "right", klineData: kLineData });
-        }
-      });
+      const chartApi = ref.current.getChartApi();
+
+      const { from, to } = chartApi.getVisibleRange()!;
+      const { dataIndex, kLineData } = data;
+      const center = (to - from) / 2 + from;
+      if (dataIndex > center) {
+        setTooltip({ direction: "left", klineData: kLineData });
+      } else {
+        setTooltip({ direction: "right", klineData: kLineData });
+      }
+    });
   }, [code, id]);
 
   React.useEffect(() => {

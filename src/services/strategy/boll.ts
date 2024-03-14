@@ -1,7 +1,7 @@
 import { KLineData } from "klinecharts";
-import { formatKlineData, formatNumber } from "../../utils/format";
-import { bollingerBands } from "indicatorts";
-import Trader from "../trader";
+import { formatNumber } from "../../utils/format";
+import { BollingerBands, bollingerBands } from "indicatorts";
+import Common from "./common";
 
 enum StatusType {
   // 初始状态
@@ -54,18 +54,25 @@ const calcStatusType = (
   return StatusType.over_lower;
 };
 
-const runTask = (klineData: KLineData[]) => {
-  const kData = formatKlineData(klineData);
+class Boll extends Common {
+  boll?: BollingerBands;
+  lastStatus: StatusType = StatusType.start;
 
-  const trader = new Trader();
+  prepare(): void {
+    this.boll = bollingerBands(this.klineInstance.klineGroupByField.closings);
+  }
 
-  const boll = bollingerBands(kData.closings);
+  run(kline: KLineData, index: number) {
+    const {
+      boll,
+      klineInstance: { trader },
+    } = this;
 
-  let lastStatus: StatusType = StatusType.start;
-
-  klineData.forEach((kline, index) => {
+    if (!boll) {
+      return;
+    }
     if (index < 19) {
-      lastStatus = StatusType.start;
+      this.lastStatus = StatusType.start;
       trader.hold(kline);
 
       return;
@@ -89,12 +96,12 @@ const runTask = (klineData: KLineData[]) => {
         StatusType.in_top,
         StatusType.over_lower,
         StatusType.stand_lower,
-      ].includes(lastStatus) &&
+      ].includes(this.lastStatus) &&
       [StatusType.stand_middle, StatusType.in_bottom].includes(status)
     ) {
       trader.buy(close, 2000, 0.2, kline);
     } else if (
-      [StatusType.in_bottom, StatusType.over_lower].includes(lastStatus) &&
+      [StatusType.in_bottom, StatusType.over_lower].includes(this.lastStatus) &&
       [StatusType.stand_middle, StatusType.in_top].includes(status)
     ) {
       trader.sell(close, 2000, 0.2, kline);
@@ -102,7 +109,7 @@ const runTask = (klineData: KLineData[]) => {
       trader.hold(kline);
     }
 
-    lastStatus = status;
+    this.lastStatus = status;
 
     /**
      * 打标签：
@@ -117,9 +124,7 @@ const runTask = (klineData: KLineData[]) => {
     /**
      * 策略
      */
-  });
+  }
+}
 
-  return trader;
-};
-
-export default runTask;
+export default Boll;

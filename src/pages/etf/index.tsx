@@ -4,9 +4,7 @@ import Chart from "../../components/stock-chart";
 import StatisticChart from "../../components/statistic-chart";
 import React from "react";
 import task from "../../services/strategy";
-import dayjs from "dayjs";
 import Trader from "../../services/trader";
-import { ActionType } from "../../constant/enum";
 
 const { Option } = Select;
 
@@ -21,39 +19,17 @@ const useTrader = () => {
     });
   }, [code]);
 
-  const statistic = React.useMemo(() => {
-    if (!trader?.log) {
-      return [];
-    }
-
-    return trader.log.map((item) => ({
-      timestamp: dayjs(item.timestamp).format("YYYY-MM-DD"),
-      收益: item.profit_and_loss,
-      投入: item.input,
-    }));
-  }, [trader?.log]);
-
-  const actions = React.useMemo(() => {
-    if (!trader?.log) {
-      return [];
-    }
-
-    return trader.log.filter((log) =>
-      [ActionType.Buy, ActionType.Sell].includes(log.type)
-    );
-  }, [trader?.log]);
-
-  return { statistic, actions };
+  return trader;
 };
 
 const Etf = () => {
   const { code } = useParams() as { code: string };
-  const { statistic, actions } = useTrader();
+  const trader = useTrader();
 
   return (
     <div>
       <div>
-        <Chart code={code} actions={actions} />
+        <Chart code={code} actions={trader?.trader_logs ?? []} />
       </div>
       <div>
         <h2>
@@ -62,7 +38,7 @@ const Etf = () => {
             <Option value="boll">Boll</Option>
           </Select>
         </h2>
-        <StatisticChart data={statistic} />
+        <StatisticChart data={trader?.trader_record ?? []} />
       </div>
       <div>详细交易记录</div>
     </div>
