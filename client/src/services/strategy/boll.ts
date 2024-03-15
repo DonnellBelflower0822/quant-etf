@@ -22,38 +22,6 @@ enum StatusType {
   over_lower,
 }
 
-const calcStatusType = (
-  close: number,
-  lower: number,
-  middle: number,
-  top: number
-) => {
-  if (close > top) {
-    return StatusType.over_upper;
-  }
-  if (close === top) {
-    return StatusType.stand_upper;
-  }
-
-  if (close > middle) {
-    return StatusType.in_top;
-  }
-
-  if (close === middle) {
-    return StatusType.stand_middle;
-  }
-
-  if (close > lower) {
-    return StatusType.in_bottom;
-  }
-
-  if (close === lower) {
-    return StatusType.stand_lower;
-  }
-
-  return StatusType.over_lower;
-};
-
 class Boll extends Common {
   boll?: BollingerBands;
   lastStatus: StatusType = StatusType.start;
@@ -61,6 +29,38 @@ class Boll extends Common {
   prepare(): void {
     this.boll = bollingerBands(this.klineInstance.klineGroupByField.closings);
   }
+
+  calcStatusType = (
+    close: number,
+    lower: number,
+    middle: number,
+    top: number
+  ) => {
+    if (close > top) {
+      return StatusType.over_upper;
+    }
+    if (close === top) {
+      return StatusType.stand_upper;
+    }
+
+    if (close > middle) {
+      return StatusType.in_top;
+    }
+
+    if (close === middle) {
+      return StatusType.stand_middle;
+    }
+
+    if (close > lower) {
+      return StatusType.in_bottom;
+    }
+
+    if (close === lower) {
+      return StatusType.stand_lower;
+    }
+
+    return StatusType.over_lower;
+  };
 
   run(kline: KLineData, index: number) {
     const {
@@ -83,7 +83,7 @@ class Boll extends Common {
     const upper = formatNumber(boll.upperBand[index]);
     const middle = formatNumber(boll.middleBand[index]);
 
-    const status = calcStatusType(close, lower, middle, upper);
+    const status = this.calcStatusType(close, lower, middle, upper);
 
     if ([StatusType.over_upper, StatusType.stand_upper].includes(status)) {
       trader.sell(close, 2000, 0.2, kline);

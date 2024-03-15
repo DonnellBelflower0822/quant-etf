@@ -1,0 +1,6 @@
+{
+  "i18n-ally.localesPaths": [
+    "klinecharts-pro-code/src/i18n",
+    "klinecharts-code/src/extension/i18n"
+  ]
+}

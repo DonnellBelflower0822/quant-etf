@@ -7,11 +7,8 @@ class Statistics {
     this.klineData = klineData;
   }
 
-  get turnoverStatistics() {
-    const total = 10;
-    const max = 5;
-
-    const range = [...new Array(total)].map((_, i) => {
+  getTurnoverStatistics(max = 5) {
+    const range = [...new Array(max * 2)].map((_, i) => {
       const value = max - i;
       return {
         title: `大于等于${value}`,
