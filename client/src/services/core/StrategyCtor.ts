@@ -1,11 +1,11 @@
 import { KLineData } from "klinecharts";
-import Kline from "../data/Kline";
+import Rich from "./Rich";
 
 class Common {
-  klineInstance: Kline;
+  richInstance: Rich;
 
-  constructor(klineInstance: Kline) {
-    this.klineInstance = klineInstance;
+  constructor(klineInstance: Rich) {
+    this.richInstance = klineInstance;
   }
 
   prepare() {}
@@ -16,7 +16,7 @@ class Common {
 
 export default Common;
 
-export const runTask = (Ctor: typeof Common, klineInstance: Kline) => {
+export const runTask = (Ctor: typeof Common, klineInstance: Rich) => {
   const instance = new Ctor(klineInstance);
   instance.prepare();
 

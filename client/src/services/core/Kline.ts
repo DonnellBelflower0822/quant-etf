@@ -1,7 +1,5 @@
 import dayjs from "dayjs";
 import { KLineData } from "klinecharts";
-import Statistics from "./Statistics";
-import Trader from "../trader";
 import { FormatKData } from "../../type";
 
 class Kline {
@@ -19,8 +17,6 @@ class Kline {
   ];
 
   klineData: KLineData[] = [];
-  statistics: Statistics;
-  trader: Trader;
 
   /**
    * @param originData
@@ -39,8 +35,6 @@ class Kline {
         {} as KLineData
       );
     });
-    this.statistics = new Statistics(this.klineData);
-    this.trader = new Trader();
   }
 
   get klineGroupByField() {

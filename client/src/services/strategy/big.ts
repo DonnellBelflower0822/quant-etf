@@ -1,4 +1,4 @@
-import Common from "./common";
+import Common from "../core/StrategyCtor";
 import { KLineData } from "klinecharts";
 
 class Big extends Common {
@@ -6,7 +6,7 @@ class Big extends Common {
 
   run(kline: KLineData) {
     const { close, turnover = 0 } = kline;
-    const { trader } = this.klineInstance;
+    const { trader } = this.richInstance;
     if (turnover > 3) {
       trader.sell(close, 4000, 0, kline);
     } else if (turnover > 2) {

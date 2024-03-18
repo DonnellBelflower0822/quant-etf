@@ -5,7 +5,7 @@ import "klinecharts-pro-xxz/dist/klinecharts-pro.css";
 import React from "react";
 import DefaultDatafeed from "./DefaultDatafeed";
 import { periods } from "./constant";
-import { Log } from "../../services/trader";
+import { Log } from "../../services/core/Trader";
 import { ActionType } from "../../constant/enum";
 import Tooltip, { ITooltip } from "./Tooltip";
 

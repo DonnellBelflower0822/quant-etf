@@ -1,7 +1,7 @@
 import { KLineData } from "klinecharts";
 import { formatNumber } from "../../utils/format";
 import { BollingerBands, bollingerBands } from "indicatorts";
-import Common from "./common";
+import Common from "../core/StrategyCtor";
 
 enum StatusType {
   // 初始状态
@@ -27,7 +27,9 @@ class Boll extends Common {
   lastStatus: StatusType = StatusType.start;
 
   prepare(): void {
-    this.boll = bollingerBands(this.klineInstance.klineGroupByField.closings);
+    this.boll = bollingerBands(
+      this.richInstance.kline.klineGroupByField.closings
+    );
   }
 
   calcStatusType = (
@@ -65,7 +67,7 @@ class Boll extends Common {
   run(kline: KLineData, index: number) {
     const {
       boll,
-      klineInstance: { trader },
+      richInstance: { trader },
     } = this;
 
     if (!boll) {

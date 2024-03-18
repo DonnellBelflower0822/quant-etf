@@ -4,32 +4,25 @@ import Chart from "../../components/stock-chart";
 import StatisticChart from "../../components/statistic-chart";
 import React from "react";
 import task from "../../services/strategy";
-import Trader from "../../services/trader";
+import Rich from "../../services/core/Rich";
 
 const { Option } = Select;
 
-const useTrader = () => {
+const Etf = () => {
   const { code } = useParams() as { code: string };
 
-  const [trader, setTrader] = React.useState<Trader>();
+  const [rich, setRich] = React.useState<Rich>();
 
   React.useEffect(() => {
     task(code).then((res) => {
-      return setTrader(res);
+      return setRich(res);
     });
   }, [code]);
-
-  return trader;
-};
-
-const Etf = () => {
-  const { code } = useParams() as { code: string };
-  const trader = useTrader();
 
   return (
     <div>
       <div>
-        <Chart code={code} actions={trader?.trader_logs ?? []} />
+        <Chart code={code} actions={rich?.trader?.trader_logs ?? []} />
       </div>
       <div>
         <h2>
@@ -38,7 +31,7 @@ const Etf = () => {
             <Option value="boll">Boll</Option>
           </Select>
         </h2>
-        <StatisticChart data={trader?.trader_record ?? []} />
+        <StatisticChart data={rich?.trader?.trader_record ?? []} />
       </div>
       <div>详细交易记录</div>
     </div>

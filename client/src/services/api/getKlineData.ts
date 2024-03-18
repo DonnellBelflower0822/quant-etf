@@ -1,5 +1,5 @@
 import { commonFetch } from "../../utils/fetch";
-import Kline from "../data/Kline";
+import Rich from "../core/Rich";
 
 interface Clist {
   data: {
@@ -46,7 +46,7 @@ export const getKlineData = async (
   end_date: string = "20500000",
   period: "daily" | "weekly" | "monthly" = "daily",
   adjust: "qfq" | "hfq" | "" = "qfq"
-): Promise<Kline | null> => {
+): Promise<Rich | null> => {
   const code_id_dict = await _fund_etf_code_id_map_em();
   const result = await commonFetch<OriginKlineData>(
     "https://push2his.eastmoney.com/api/qt/stock/kline/get",
@@ -75,5 +75,5 @@ export const getKlineData = async (
     return null;
   }
 
-  return new Kline(result.data.klines);
+  return new Rich(result.data.klines);
 };
