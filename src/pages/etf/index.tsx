@@ -22,7 +22,7 @@ const Etf = () => {
   return (
     <div>
       <div>
-        <Chart code={code} actions={rich?.trader?.trader_logs ?? []} />
+        <Chart code={code} actions={[]} />
       </div>
       <div>
         <h2>

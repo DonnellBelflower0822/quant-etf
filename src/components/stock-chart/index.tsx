@@ -8,6 +8,7 @@ import { periods } from "./constant";
 import { Log } from "../../services/core/Trader";
 import { ActionType } from "../../constant/enum";
 import Tooltip, { ITooltip } from "./Tooltip";
+import { useTheme } from "../../hooks/useTheme";
 
 const Chart: React.FC<{ code: string; actions: Log[] }> = ({
   code,
@@ -21,6 +22,8 @@ const Chart: React.FC<{ code: string; actions: Log[] }> = ({
     () => "id" + parseInt(Math.random() * 10000000 + ""),
     []
   );
+  const theme = useTheme();
+
   React.useEffect(() => {
     if (!code || ref.current) {
       return;
@@ -29,6 +32,7 @@ const Chart: React.FC<{ code: string; actions: Log[] }> = ({
     ref.current = new KLineChartPro({
       drawingBarVisible: false,
       container: document.getElementById(id)!,
+      theme,
       // 初始化标的信息
       symbol: {
         exchange: "XNYS",
@@ -76,6 +80,13 @@ const Chart: React.FC<{ code: string; actions: Log[] }> = ({
       }
     });
   }, [code, id]);
+
+  React.useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    ref.current.setTheme(theme);
+  }, [theme]);
 
   React.useEffect(() => {
     if (!ref.current) {

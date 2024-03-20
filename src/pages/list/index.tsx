@@ -1,9 +1,28 @@
 import { Spin, TableColumnProps, Table } from "antd";
 import { useRequest } from "ahooks";
 import { ReturnType, getEtfList } from "../../services/api/getEtfList";
+import { useLocation, useNavigate } from "react-router-dom";
+
+const useTableParams = () => {
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+
+  const current = searchParams.get("current")
+    ? Number(searchParams.get("current"))
+    : 1;
+  const pageSize = searchParams.get("size")
+    ? Number(searchParams.get("size"))
+    : 10;
+
+  return { current, pageSize };
+};
 
 const List = () => {
   const { data } = useRequest(() => getEtfList());
+  const navigate = useNavigate();
+
+  const { current, pageSize } = useTableParams();
 
   if (!data) {
     return <Spin />;
@@ -30,7 +49,20 @@ const List = () => {
     <div>
       <div>最近概览</div>
       <div>
-        <Table rowKey="code" columns={columns} dataSource={data} />
+        <Table
+          rowKey="code"
+          columns={columns}
+          dataSource={data}
+          pagination={{
+            current,
+            pageSize,
+          }}
+          onChange={(e) => {
+            navigate(`?current=${e.current}&size=${e.pageSize}`, {
+              replace: true,
+            });
+          }}
+        />
       </div>
     </div>
   );

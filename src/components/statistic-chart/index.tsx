@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { DualAxes } from "@ant-design/charts";
+import { Theme, useTheme } from "../../hooks/useTheme";
 
 export interface Data {
   timestamp: string;
@@ -10,9 +11,11 @@ export interface Data {
 }
 
 const StatisticChart: React.FC<{ data: Data[] }> = ({ data }) => {
+  const theme = useTheme();
   const config = {
     data,
     xField: "timestamp",
+    theme: theme === Theme.light ? "classic" : "classicDark",
     padding: 70,
     legend: true,
     slider: { x: true },

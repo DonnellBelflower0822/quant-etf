@@ -66,7 +66,7 @@ const Tooltip: React.FC<{ tooltip?: ITooltip }> = ({ tooltip }) => {
   return (
     <div
       className={classnames(
-        "absolute z-50 top-16 w-32 shadow-md bg-slate-50 p-2 box-border text-xs",
+        "absolute z-50 top-16 w-32 shadow-md bg-slate-50 p-2 box-border text-xs dark:bg-slate-800",
         {
           "left-2": direction !== "right",
           "right-[70px]": direction === "right",
